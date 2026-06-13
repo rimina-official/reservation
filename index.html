@@ -1254,18 +1254,16 @@ async function initLiff() {
 // Init
 // ==========================================================================
 async function init() {
-  // LIFF初期化を試みる（LINE内で開かれてれば成功、ブラウザ直アクセスなら失敗してゲストモード）
-  await initLiff();
-
+  // LINE_USER_ID は読み込み時に localStorage から復元済み。LIFF初期化を待たずにまず描画する。
   updateUserInfo();
 
-  // localStorageキャッシュからbookingsCacheを即座に復元
+  // 【対策1】LSキャッシュからbookingsCacheを即座に復元（楽観表示）
   const initialBookings = lcGet('bookings_' + LINE_USER_ID);
   if (initialBookings && initialBookings.bookings) {
     bookingsCache = initialBookings;
     updateBookingCount();
   }
-  // 残レッスン数も即時表示（localStorageキャッシュから）
+  // 残レッスン数も即時表示（LSキャッシュから）
   fetchMyBalance();
 
   // URLパラメータでタブ指定があれば反映（リッチメニューからの ?tab=mybookings 用）
@@ -1276,7 +1274,27 @@ async function init() {
   }
 
   loadMonth();
-  backgroundRefreshBookings();
+
+  // 【対策2】前回が実ユーザー（ゲストでない）なら、LIFF初期化の完了を待たずに予約取得を先行
+  const prevUid = LINE_USER_ID;
+  const looksReal = LINE_USER_ID && !LINE_USER_ID.startsWith('guest-');
+  if (looksReal) backgroundRefreshBookings();
+
+  // LIFF初期化は並行で実行。完了後、実IDが判明して変わっていれば取得し直す
+  await initLiff();
+  updateUserInfo();
+  if (LINE_USER_ID !== prevUid || !looksReal) {
+    const lc2 = lcGet('bookings_' + LINE_USER_ID);
+    if (lc2 && lc2.bookings) {
+      bookingsCache = lc2;
+      updateBookingCount();
+      if (document.getElementById('view-mybookings').classList.contains('active')) {
+        renderBookingsHTML(lc2.bookings);
+      }
+    }
+    fetchMyBalance();
+    backgroundRefreshBookings();
+  }
 }
 
 init();
