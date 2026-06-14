@@ -441,6 +441,13 @@ function isPast(date, time) {
 }
 function isBookable(lesson) {
   if (lesson.available <= 0) return false;
+  // 【締切】開始時刻の1時間前を過ぎたら予約不可（グレー表示・締切済み）
+  if (lesson.date && lesson.time) {
+    const [__Y, __Mo, __D] = lesson.date.split('-').map(Number);
+    const [__h, __mi] = lesson.time.split(':').map(Number);
+    const __start = new Date(__Y, __Mo - 1, __D, __h, __mi).getTime();
+    if (Date.now() >= __start - 60 * 60 * 1000) return false;
+  }
   if (!lesson.bookable_until) return true;
   const m = lesson.bookable_until.match(/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})/);
   if (!m) return true;
