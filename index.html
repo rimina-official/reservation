@@ -342,6 +342,20 @@ const COACH_MEET_CODE = {
   'MOKA':     'ypn-diqm-kxv',
   'KAWAHARA': 'mof-btgj-gov'
 };
+
+// === キャンペーンレッスン（チケット消費しない期間） ===
+// 新キャンペーンを追加するときはこの配列に1行足すだけ
+// from/to は YYYY-MM-DD（両端含む）
+const CAMPAIGNS = [
+  { coach: 'NOZOMI', from: '2026-07-01', to: '2026-07-07', label: 'NOZOMIコーチ受け放題' }
+];
+
+function isCampaignLesson(lesson) {
+  if (!lesson) return false;
+  return CAMPAIGNS.some(function(c) {
+    return lesson.coach === c.coach && lesson.date >= c.from && lesson.date <= c.to;
+  });
+}
 const LESSON_ICON = {
   'フェムコアBasic':'🌸','フェムコアPlus':'🌸','リカバリーストレッチ':'🧘',
   'Sラインシェイプ':'🍑','Vシルエットメイク':'✨','脂肪燃焼Lite':'🔥','脂肪燃焼Hard':'🔥',
@@ -982,7 +996,10 @@ function updateBalanceBar() {
   let usedNow = balanceCache.used_this_month || 0;
   if (bookingsCache && bookingsCache.bookings) {
     const monthStr = balanceCache.month || (new Date()).toISOString().slice(0, 7);
-    usedNow = Math.max(usedNow, bookingsCache.bookings.filter(b => b.lesson_id && String(b.lesson_id).startsWith(monthStr)).length);
+    // キャンペーンレッスン（受け放題等）は消費カウントから除外
+    usedNow = bookingsCache.bookings.filter(b => 
+      b.lesson_id && String(b.lesson_id).startsWith(monthStr) && !isCampaignLesson(b.lesson)
+    ).length;
   }
   const limit = balanceCache.monthly_limit || 0;
   const remaining = Math.max(0, limit - usedNow);
