@@ -83,7 +83,7 @@ header .sub { font-size: 12px; opacity: 0.9; margin-top: 4px; }
 .day-detail h3 { font-size: 16px; margin-bottom: 12px; color: var(--primary); }
 
 /* Lesson card */
-.lesson-card { background: var(--surface); border-radius: 10px; border-left: 5px solid var(--primary); padding: 12px 14px; margin-bottom: 10px; display: flex; gap: 12px; align-items: center; box-shadow: 0 1px 3px rgba(192,96,128,0.06); }
+.lesson-card { background: var(--surface); border-radius: 10px; border-left: 5px solid var(--primary); padding: 12px 14px; margin-bottom: 10px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; box-shadow: 0 1px 3px rgba(192,96,128,0.06); }
 .lesson-card.full { opacity: 0.55; }
 .lesson-time-block { min-width: 60px; text-align: center; }
 .lesson-time { font-size: 18px; font-weight: 700; color: var(--primary); }
@@ -96,7 +96,7 @@ header .sub { font-size: 12px; opacity: 0.9; margin-top: 4px; }
 .lesson-availability.full { color: #d4767a; font-weight: 600; }
 .book-btn { background: var(--primary); color: white; border: none; padding: 8px 14px; border-radius: 18px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .book-btn:disabled { background: #ccc; cursor: not-allowed; }
-.campaign-badge { display:inline-block; margin-top:8px; padding:3px 10px; background:linear-gradient(90deg,#FB923C,#EC4899); color:white; font-size:10px; font-weight:700; border-radius:10px; white-space:nowrap; letter-spacing:0.3px; box-shadow:0 2px 4px rgba(236,72,153,0.3); }
+.campaign-badge { flex-basis:100%; box-sizing:border-box; margin-top:4px; padding:6px 10px; background:linear-gradient(90deg,#FB923C,#EC4899); color:white; font-size:11px; font-weight:700; border-radius:8px; text-align:center; letter-spacing:0.5px; box-shadow:0 2px 6px rgba(236,72,153,0.25); }
 
 /* Borders by lesson type */
 .t-femB { border-left-color: var(--type-femB); }
@@ -643,8 +643,8 @@ function lessonCardHTML(l) {
     +   '<button class="book-btn" onclick="openBooking(\'' + l.id + '\')" ' + (bookable?'':'disabled') + '>'
     +     (bookable ? '予約する' : '×')
     +   '</button>'
-    +   (isCampaignLesson(l) ? '<div class="campaign-badge">🎁 チケット消費なし</div>' : '')
     + '</div>'
+    + (isCampaignLesson(l) ? '<div class="campaign-badge">🎁 キャンペーン中・チケット消費なし</div>' : '')
     + '</div>';
 }
 
