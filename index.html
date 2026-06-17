@@ -96,6 +96,10 @@ header .sub { font-size: 12px; opacity: 0.9; margin-top: 4px; }
 .lesson-availability.full { color: #d4767a; font-weight: 600; }
 .book-btn { background: var(--primary); color: white; border: none; padding: 8px 14px; border-radius: 18px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .book-btn:disabled { background: #ccc; cursor: not-allowed; }
+.avail-big { margin-top:8px; padding:4px 8px; font-size:13px; font-weight:800; text-align:center; border-radius:10px; white-space:nowrap; min-width:60px; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+.avail-big.ok   { background:#d4f4d6; color:#2d8a3d; }
+.avail-big.few  { background:#fff3e0; color:#d97706; }
+.avail-big.full { background:#f3f4f6; color:#888; }
 .campaign-badge { flex-basis:100%; box-sizing:border-box; margin-top:4px; padding:6px 10px; background:linear-gradient(90deg,#FB923C,#EC4899); color:white; font-size:11px; font-weight:700; border-radius:8px; text-align:center; letter-spacing:0.5px; box-shadow:0 2px 6px rgba(236,72,153,0.25); }
 
 /* Borders by lesson type */
@@ -631,12 +635,13 @@ function lessonCardHTML(l) {
     + '<div class="lesson-time-block" style="padding-top:6px">'
     +   '<div class="lesson-time">' + l.time + '</div>'
     +   '<div class="lesson-icon-sq">' + lessonIcon(l.lesson_name) + '</div>'
+    +   '<div class="avail-big ' + (!bookable ? 'full' : (l.available <= 2 ? 'few' : 'ok')) + '">' + availText + '</div>'
     + '</div>'
     + '<div class="lesson-body">'
     +   '<div class="lesson-name">' + l.lesson_name + '</div>'
     +   (t.desc ? '<div class="lesson-desc">' + t.desc + '</div>' : '')
     +   (t.target ? '<div class="lesson-target">▶ ' + t.target + '</div>' : '')
-    +   '<div class="lesson-meta">担当: ' + l.coach + ' / 50分　<span class="lesson-availability ' + availCls + '" style="display:inline">' + availText + '</span></div>'
+    +   '<div class="lesson-meta">担当: ' + l.coach + ' / 50分</div>'
     + '</div>'
     + '<div class="coach-col" style="margin-top:6px">'
     +   coachAvatarHTML(l.coach)
